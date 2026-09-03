@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job-Readiness Score</title>
+  <meta name="description" content="Check how ready your CV/profile is for the job market and get specific, actionable feedback — free, instant, no login.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <h1>Job-Readiness Score</h1>
+      <p class="tagline">Answer 6 quick questions and get an instant score out of 100, plus specific tips to improve it.</p>
+    </header>
+
+    <main>
+      <form id="readiness-form" novalidate>
+        <div class="field">
+          <label for="education">1. What's your highest education level?</label>
+          <select id="education" name="education" required>
+            <option value="" disabled selected>Select one…</option>
+            <option value="none">No formal education</option>
+            <option value="secondary">Secondary school</option>
+            <option value="vocational">Vocational or technical certificate</option>
+            <option value="bachelors">Bachelor's degree</option>
+            <option value="masters">Master's degree or higher</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="experience">2. Years of relevant work experience</label>
+          <select id="experience" name="experience" required>
+            <option value="" disabled selected>Select one…</option>
+            <option value="0">0 (none yet)</option>
+            <option value="lt1">Less than 1 year</option>
+            <option value="1-3">1–3 years</option>
+            <option value="3-5">3–5 years</option>
+            <option value="5plus">5+ years</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="skills">3. Key skills <span class="hint">(comma-separated, e.g. "Excel, customer service, Python")</span></label>
+          <textarea id="skills" name="skills" rows="2" required placeholder="e.g. Excel, customer service, Python"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="role">4. Target job title / role</label>
+          <input type="text" id="role" name="role" required placeholder="e.g. Data Analyst">
+        </div>
+
+        <div class="field">
+          <label for="location">5. Target location <span class="hint">(city, country, or "Remote")</span></label>
+          <input type="text" id="location" name="location" required placeholder="e.g. Lagos, Nigeria or Remote">
+        </div>
+
+        <div class="field">
+          <label for="readiness">6. Do you have a CV or LinkedIn profile ready to share with employers?</label>
+          <select id="readiness" name="readiness" required>
+            <option value="" disabled selected>Select one…</option>
+            <option value="yes">Yes, it's ready</option>
+            <option value="progress">In progress</option>
+            <option value="no">Not yet</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary">Check My Readiness Score</button>
+      </form>
+
+      <section id="results" class="results" hidden aria-live="polite">
+        <div class="score-card">
+          <div class="score-number" id="score-number">0</div>
+          <div class="score-label" id="score-label">—</div>
+        </div>
+
+        <div class="breakdown" id="breakdown"></div>
+
+        <div class="suggestions">
+          <h2>How to improve your score</h2>
+          <ul id="suggestions-list"></ul>
+        </div>
+
+        <details class="how-it-works">
+          <summary>How is this score calculated?</summary>
+          <ul>
+            <li><strong>Skills (25 pts)</strong> — how many specific, real skills you listed (up to 5 counted)</li>
+            <li><strong>Experience (25 pts)</strong> — scaled by years of relevant work experience</li>
+            <li><strong>Education (15 pts)</strong> — capped low on purpose, since many good jobs don't require a degree</li>
+            <li><strong>Profile completeness (20 pts)</strong> — whether every question was answered with real, specific detail</li>
+            <li><strong>Application readiness (15 pts)</strong> — whether you have a CV/LinkedIn ready to actually send</li>
+          </ul>
+          <p class="disclaimer">This is a simple, transparent rules-based score — not an AI judgment of your career. It rewards a complete, specific profile.</p>
+        </details>
+
+        <button type="button" class="btn-secondary" id="start-over">Start Over</button>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Job-Readiness Score — v1. No sign-up, nothing saved.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
