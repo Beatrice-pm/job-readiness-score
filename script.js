@@ -77,7 +77,7 @@ const ROLE_CATEGORIES = [
   },
   {
     name: "Business, Product & Project Management",
-    keywords: ["product manage", "project manage", "program manage", "roadmap", "stakeholder", "agile", "scrum", "jira", "user research", "product strategy", "prioritiz", "go-to-market", "a/b test", "sprint", "backlog", "okr", "kpi", "cross-functional", "business analy", "operations manage"],
+    keywords: ["product manage", "project manage", "program manage", "product owner", "product officer", "product lead", "head of product", "vp product", "cpo", "chief product", "roadmap", "stakeholder", "agile", "scrum", "jira", "user research", "product strategy", "prioritiz", "go-to-market", "a/b test", "sprint", "backlog", "okr", "kpi", "cross-functional", "business analy", "operations manage"],
     examples: ["product roadmapping", "Agile/Scrum", "stakeholder management", "Jira", "user research"]
   }
 ];
@@ -119,7 +119,13 @@ function findRoleCategory(roleText) {
 }
 
 function skillMatchesCategory(skillLower, category) {
-  return category.keywords.some(k => skillLower.includes(k) || k.includes(skillLower));
+  return category.keywords.some(k => {
+    if (skillLower.includes(k)) return true;
+    // Reverse check (skill is a shorter form of a longer keyword, e.g. "pipe"
+    // matching "pipefit") only for skills of 4+ chars, so short generic words
+    // (e.g. "man") can't spuriously match inside a longer keyword phrase.
+    return skillLower.length >= 4 && k.includes(skillLower);
+  });
 }
 
 const EXPERIENCE_POINTS = {
@@ -235,9 +241,10 @@ function scoreProfile(data) {
   const userRank = EXPERIENCE_RANK[data.experience] ?? 0;
   const seniorityGap = seniority ? Math.max(0, seniority.minRank - userRank) : 0;
   const cap = seniorityGap > 0 ? CAP_BY_GAP[seniorityGap] : null;
-  const total = cap !== null ? Math.min(rawTotal, cap) : rawTotal;
+  const capApplied = cap !== null && cap < rawTotal;
+  const total = capApplied ? cap : rawTotal;
 
-  return { total, rawTotal, buckets, validSkills, relevantSkills, category, seniority, seniorityGap, cap };
+  return { total, rawTotal, buckets, validSkills, relevantSkills, category, seniority, seniorityGap, cap, capApplied };
 }
 
 function scoreTier(total) {
@@ -315,7 +322,11 @@ function buildSuggestions(data, result) {
 
   if (result.seniorityGap > 0) {
     const seniorityWord = result.seniority.label.replace(/-level$/i, "");
-    const gapText = `Your target role "${role}" reads as ${result.seniority.label}, which typically expects more experience than "${EXPERIENCE_LABELS[data.experience]}". This is a significant mismatch, so your score is capped at ${result.cap} regardless of other strengths — consider targeting a title that matches your current experience (e.g. dropping "${seniorityWord}" from the title), or building more experience before applying at this level.`;
+    const mismatchIntro = `Your target role "${role}" reads as ${result.seniority.label}, which typically expects more experience than "${EXPERIENCE_LABELS[data.experience]}".`;
+    const advice = `consider targeting a title that matches your current experience (e.g. dropping "${seniorityWord}" from the title), or building more experience before applying at this level.`;
+    const gapText = result.capApplied
+      ? `${mismatchIntro} This is a significant mismatch, so your score is capped at ${result.total} (it would be ${result.rawTotal} without this mismatch) — ${advice}`
+      : `${mismatchIntro} Your other answers already kept the score this low, so the mismatch didn't reduce it further this time — but employers would still see it as a red flag: ${advice}`;
     picked = [gapText, ...picked].slice(0, 5);
   }
 
@@ -332,8 +343,8 @@ function renderResults(data, result) {
   document.getElementById("score-label").textContent = tier.label;
 
   const scoreNoteEl = document.getElementById("score-note");
-  if (result.seniorityGap > 0) {
-    scoreNoteEl.textContent = `Capped at ${result.cap} — role/experience mismatch (see suggestions below)`;
+  if (result.capApplied) {
+    scoreNoteEl.textContent = `Capped at ${result.total} — would be ${result.rawTotal} without the role/experience mismatch (see suggestions below)`;
     scoreNoteEl.hidden = false;
   } else {
     scoreNoteEl.hidden = true;
