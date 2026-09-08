@@ -399,6 +399,7 @@ function handleStartOver() {
   document.getElementById("readiness-form").reset();
   document.getElementById("readiness-form").hidden = false;
   document.getElementById("results").hidden = true;
+  document.getElementById("score-note").hidden = true;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
