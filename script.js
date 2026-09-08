@@ -17,62 +17,62 @@ const VAGUE_SKILLS = [
 const ROLE_CATEGORIES = [
   {
     name: "Skilled Trades & Construction",
-    keywords: ["plumb", "pipefit", "electrician", "electrical", "wiring", "carpente", "welder", "welding", "mason", "construction", "hvac", "mechanic", "automotive", "paint", "tiling", "roofing", "scaffold"],
-    examples: ["plumbing", "electrical wiring", "carpentry", "welding", "HVAC repair"]
+    keywords: ["plumb", "pipefit", "pipe", "solder", "blueprint", "leak", "drainage", "fixture", "fitting", "electrician", "electrical", "wiring", "carpente", "welder", "welding", "mason", "concrete", "brick", "construction", "renovation", "framing", "drywall", "flooring", "insulation", "hvac", "mechanic", "automotive", "power tool", "hand tool", "paint", "tiling", "roofing", "scaffold"],
+    examples: ["plumbing", "pipefitting", "electrical wiring", "carpentry", "welding", "HVAC repair"]
   },
   {
     name: "Software & IT",
-    keywords: ["javascript", "python", "java", "sql", "html", "css", "react", "node", "programming", "software", "developer", "data analy", "power bi", "tableau", "networking", "cybersecurity", "it support", "cloud", "aws", "database", "coding", "web develop", "app develop", "devops"],
+    keywords: ["javascript", "typescript", "python", "java", "c++", "c#", "php", "ruby", "swift", "kotlin", "sql", "html", "css", "react", "node", "git", "api", "linux", "programming", "software", "developer", "data analy", "power bi", "tableau", "machine learning", "networking", "cybersecurity", "it support", "help desk", "cloud", "aws", "database", "coding", "web develop", "app develop", "devops", "automation", "qa testing"],
     examples: ["SQL", "Python", "data analysis", "cloud platforms (AWS)", "IT support"]
   },
   {
     name: "Sales & Customer Service",
-    keywords: ["sales", "customer service", "crm", "negotiat", "upsell", "retail", "cashier", "call cent", "telemarketing", "client relations", "account manage", "business development"],
+    keywords: ["sales", "customer service", "customer support", "crm", "negotiat", "upsell", "retail", "cashier", "cash handling", "pos system", "call cent", "cold calling", "lead generation", "telemarketing", "client relations", "account manage", "business development"],
     examples: ["CRM software", "negotiation", "customer service", "retail sales"]
   },
   {
     name: "Marketing & Social Media",
-    keywords: ["marketing", "social media", "seo", "content creation", "content writing", "copywriting", "branding", "digital marketing", "google ads", "canva", "influencer", "community manage"],
+    keywords: ["marketing", "social media", "seo", "content creation", "content writing", "copywriting", "branding", "digital marketing", "email marketing", "google ads", "google analytics", "ppc", "advertising", "campaign", "canva", "influencer", "community manage"],
     examples: ["social media management", "SEO", "content creation", "Canva"]
   },
   {
     name: "Administration & Office",
-    keywords: ["administra", "data entry", "scheduling", "microsoft office", "office manage", "filing", "bookkeeping", "correspondence", "receptionist", "executive assistant", "secretary", "clerical"],
+    keywords: ["administra", "data entry", "scheduling", "microsoft office", "office manage", "filing", "bookkeeping", "correspondence", "receptionist", "executive assistant", "secretary", "clerical", "typing", "invoicing", "record keeping", "calendar manage"],
     examples: ["Microsoft Office", "data entry", "scheduling", "office administration"]
   },
   {
     name: "Healthcare & Caregiving",
-    keywords: ["nurs", "patient care", "first aid", "caregiv", "phlebotomy", "medical", "healthcare", "chw", "midwife", "clinical", "pharmac", "physiotherap"],
+    keywords: ["nurs", "patient care", "first aid", "caregiv", "phlebotomy", "medical", "healthcare", "chw", "midwife", "clinical", "pharmac", "physiotherap", "vital signs", "wound care", "medication administ", "hygiene care"],
     examples: ["patient care", "first aid", "clinical experience"]
   },
   {
     name: "Education & Training",
-    keywords: ["teach", "tutor", "curriculum", "classroom", "lesson plan", "mentor", "instructor", "trainer", "facilitat"],
+    keywords: ["teach", "tutor", "curriculum", "classroom", "lesson plan", "mentor", "instructor", "trainer", "facilitat", "coaching", "e-learning", "assessment design"],
     examples: ["lesson planning", "classroom management", "tutoring"]
   },
   {
     name: "Hospitality & Food Service",
-    keywords: ["cook", "culinary", "chef", "food safety", "waitstaff", "waiter", "waitress", "bartend", "hospitality", "hotel", "barista", "catering", "housekeeping"],
+    keywords: ["cook", "culinary", "chef", "food safety", "menu plan", "waitstaff", "waiter", "waitress", "bartend", "hospitality", "hotel", "barista", "catering", "housekeeping", "guest service"],
     examples: ["food safety", "customer service", "barista skills", "catering"]
   },
   {
     name: "Logistics & Driving",
-    keywords: ["driv", "logistics", "warehouse", "forklift", "delivery", "supply chain", "inventory", "dispatch", "courier", "fleet"],
+    keywords: ["driv", "logistics", "warehouse", "forklift", "delivery", "supply chain", "inventory", "dispatch", "courier", "fleet", "route plan", "shipping", "loading"],
     examples: ["driving license", "warehouse management", "logistics coordination"]
   },
   {
     name: "Finance & Accounting",
-    keywords: ["account", "bookkeeping", "financial analy", "auditing", "taxation", "budget", "quickbooks", "payroll", "finance"],
+    keywords: ["account", "bookkeeping", "financial analy", "auditing", "taxation", "budget", "quickbooks", "payroll", "finance", "reconciliation", "invoicing", "financial report"],
     examples: ["bookkeeping", "Excel", "financial reporting", "QuickBooks"]
   },
   {
     name: "Design & Creative",
-    keywords: ["graphic design", "photoshop", "illustrator", "ui/ux", "ux design", "ui design", "figma", "video editing", "photography", "animation", "creative direct"],
+    keywords: ["graphic design", "photoshop", "illustrator", "ui/ux", "ux design", "ui design", "figma", "typography", "video editing", "photography", "animation", "creative direct", "3d design"],
     examples: ["graphic design", "Figma", "Adobe Photoshop", "video editing"]
   },
   {
     name: "Agriculture",
-    keywords: ["farm", "agricultur", "crop", "livestock", "irrigation", "agronom", "horticulture"],
+    keywords: ["farm", "agricultur", "crop", "planting", "harvest", "livestock", "irrigation", "agronom", "horticulture", "soil manage", "pest control", "fertiliz", "tractor"],
     examples: ["crop management", "irrigation", "livestock care"]
   }
 ];
