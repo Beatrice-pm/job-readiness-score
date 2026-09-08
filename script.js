@@ -74,8 +74,44 @@ const ROLE_CATEGORIES = [
     name: "Agriculture",
     keywords: ["farm", "agricultur", "crop", "planting", "harvest", "livestock", "irrigation", "agronom", "horticulture", "soil manage", "pest control", "fertiliz", "tractor"],
     examples: ["crop management", "irrigation", "livestock care"]
+  },
+  {
+    name: "Business, Product & Project Management",
+    keywords: ["product manage", "project manage", "program manage", "roadmap", "stakeholder", "agile", "scrum", "jira", "user research", "product strategy", "prioritiz", "go-to-market", "a/b test", "sprint", "backlog", "okr", "kpi", "cross-functional", "business analy", "operations manage"],
+    examples: ["product roadmapping", "Agile/Scrum", "stakeholder management", "Jira", "user research"]
   }
 ];
+
+// Ranks each experience bracket so it can be compared against the minimum
+// experience implied by a seniority word in the target role (e.g. "Senior").
+const EXPERIENCE_RANK = { "0": 0, "lt1": 1, "1-3": 2, "3-5": 3, "5plus": 4 };
+
+// If the target role contains one of these words, we expect at least
+// `minRank` of experience (see EXPERIENCE_RANK). A shortfall is a strong
+// signal in real recruiting — someone titling themselves "Senior" with 0
+// years isn't a minor gap, it's a mismatch — so it caps the total score
+// rather than just lowering one bucket. Checked in order; the highest
+// minRank among any matched tier wins.
+const SENIORITY_TIERS = [
+  { keywords: ["chief", "vice president", " vp ", "vp,", "director", "head of"], minRank: 4, label: "Director/Executive-level" },
+  { keywords: ["principal", "staff ", "lead "], minRank: 4, label: "Lead/Principal-level" },
+  { keywords: ["senior", "sr."], minRank: 3, label: "Senior-level" },
+  { keywords: ["mid-level", "mid level", "intermediate"], minRank: 1, label: "Mid-level" }
+];
+
+// A gap of N rank-steps caps the total score at CAP_BY_GAP[N] (min(rawTotal, cap)).
+const CAP_BY_GAP = { 1: 45, 2: 30, 3: 15, 4: 15 };
+
+function detectSeniority(roleText) {
+  const lower = " " + roleText.toLowerCase() + " ";
+  let best = null;
+  for (const tier of SENIORITY_TIERS) {
+    if (tier.keywords.some(k => lower.includes(k))) {
+      if (!best || tier.minRank > best.minRank) best = tier;
+    }
+  }
+  return best;
+}
 
 function findRoleCategory(roleText) {
   const lower = roleText.toLowerCase();
@@ -193,9 +229,15 @@ function scoreProfile(data) {
     readiness: { points: readinessPoints, max: MAX_POINTS.readiness }
   };
 
-  const total = Object.values(buckets).reduce((sum, b) => sum + b.points, 0);
+  const rawTotal = Object.values(buckets).reduce((sum, b) => sum + b.points, 0);
 
-  return { total, buckets, validSkills, relevantSkills, category };
+  const seniority = isMeaningful(data.role) ? detectSeniority(data.role) : null;
+  const userRank = EXPERIENCE_RANK[data.experience] ?? 0;
+  const seniorityGap = seniority ? Math.max(0, seniority.minRank - userRank) : 0;
+  const cap = seniorityGap > 0 ? CAP_BY_GAP[seniorityGap] : null;
+  const total = cap !== null ? Math.min(rawTotal, cap) : rawTotal;
+
+  return { total, rawTotal, buckets, validSkills, relevantSkills, category, seniority, seniorityGap, cap };
 }
 
 function scoreTier(total) {
@@ -261,7 +303,7 @@ function buildSuggestions(data, result) {
   }
 
   candidates.sort((a, b) => a.pct - b.pct);
-  const picked = candidates.slice(0, 5).map(c => c.text);
+  let picked = candidates.slice(0, 5).map(c => c.text);
 
   let i = 0;
   while (picked.length < 3 && i < GENERAL_TIPS.length) {
@@ -269,7 +311,14 @@ function buildSuggestions(data, result) {
     i++;
   }
 
-  return picked.slice(0, 5);
+  picked = picked.slice(0, 5);
+
+  if (result.seniorityGap > 0) {
+    const gapText = `Your target role "${role}" reads as ${result.seniority.label}, which typically expects more experience than "${EXPERIENCE_LABELS[data.experience]}". This is a significant mismatch, so your score is capped at ${result.cap} regardless of other strengths — consider targeting a title that matches your current experience (e.g. dropping "${result.seniority.label.split("/")[0]}" from the title), or building more experience before applying at this level.`;
+    picked = [gapText, ...picked].slice(0, 5);
+  }
+
+  return picked;
 }
 
 function renderResults(data, result) {
@@ -280,6 +329,14 @@ function renderResults(data, result) {
   scoreNumberEl.className = "score-number " + tier.color;
 
   document.getElementById("score-label").textContent = tier.label;
+
+  const scoreNoteEl = document.getElementById("score-note");
+  if (result.seniorityGap > 0) {
+    scoreNoteEl.textContent = `Capped at ${result.cap} — role/experience mismatch (see suggestions below)`;
+    scoreNoteEl.hidden = false;
+  } else {
+    scoreNoteEl.hidden = true;
+  }
 
   const breakdownEl = document.getElementById("breakdown");
   breakdownEl.innerHTML = "";
