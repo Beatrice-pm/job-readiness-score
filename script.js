@@ -21,9 +21,9 @@ const ROLE_CATEGORIES = [
     examples: ["plumbing", "pipefitting", "electrical wiring", "carpentry", "welding", "HVAC repair"]
   },
   {
-    name: "Software & IT",
-    keywords: ["javascript", "typescript", "python", "java", "c++", "c#", "php", "ruby", "swift", "kotlin", "sql", "html", "css", "react", "node", "git", "api", "linux", "programming", "software", "developer", "data analy", "power bi", "tableau", "machine learning", "networking", "cybersecurity", "it support", "help desk", "cloud", "aws", "database", "coding", "web develop", "app develop", "devops", "automation", "qa testing"],
-    examples: ["SQL", "Python", "data analysis", "cloud platforms (AWS)", "IT support"]
+    name: "Software Engineering & IT",
+    keywords: ["javascript", "typescript", "python", "java", "c++", "c#", "php", "ruby", "swift", "kotlin", "sql", "html", "css", "react", "node", "git", "api", "linux", "programming", "software", "developer", "engineer", "engineering", "backend", "back-end", "back end", "frontend", "front-end", "front end", "full stack", "fullstack", "mobile develop", "ios develop", "android develop", "embedded system", "site reliability", "sre", "docker", "kubernetes", "ci/cd", "microservice", "unit test", "test automation", "debugging", "algorithm", "data structure", "version control", "systems design", "solutions architect", "data analy", "power bi", "tableau", "machine learning", "networking", "cybersecurity", "it support", "help desk", "cloud", "aws", "database", "coding", "web develop", "app develop", "devops", "automation", "qa testing", "cto", "vp engineering", "engineering manage"],
+    examples: ["Python", "SQL", "Git", "system design", "CI/CD pipelines"]
   },
   {
     name: "Sales & Customer Service",
@@ -77,7 +77,7 @@ const ROLE_CATEGORIES = [
   },
   {
     name: "Business, Product & Project Management",
-    keywords: ["product manage", "project manage", "program manage", "product owner", "product officer", "product lead", "head of product", "vp product", "cpo", "chief product", "roadmap", "stakeholder", "agile", "scrum", "jira", "user research", "product strategy", "prioritiz", "go-to-market", "a/b test", "sprint", "backlog", "okr", "kpi", "cross-functional", "business analy", "operations manage"],
+    keywords: ["product manage", "project manage", "program manage", "product owner", "product officer", "product lead", "product associate", "associate product", "head of product", "vp product", "cpo", "chief product", "roadmap", "stakeholder", "agile", "scrum", "jira", "user research", "product strategy", "prioritiz", "go-to-market", "a/b test", "sprint", "backlog", "okr", "kpi", "cross-functional", "business analy", "operations manage"],
     examples: ["product roadmapping", "Agile/Scrum", "stakeholder management", "Jira", "user research"]
   }
 ];
@@ -93,7 +93,7 @@ const EXPERIENCE_RANK = { "0": 0, "lt1": 1, "1-3": 2, "3-5": 3, "5plus": 4 };
 // rather than just lowering one bucket. Checked in order; the highest
 // minRank among any matched tier wins.
 const SENIORITY_TIERS = [
-  { keywords: ["chief", "vice president", " vp ", "vp,", "director", "head of"], minRank: 4, label: "Director/Executive-level" },
+  { keywords: ["chief", "vice president", " vp ", "vp,", "director", "head of", "cto", "ceo", "coo", "cfo"], minRank: 4, label: "Director/Executive-level" },
   { keywords: ["principal", "staff ", "lead "], minRank: 4, label: "Lead/Principal-level" },
   { keywords: ["senior", "sr."], minRank: 3, label: "Senior-level" },
   { keywords: ["mid-level", "mid level", "intermediate"], minRank: 1, label: "Mid-level" }
