@@ -9,6 +9,83 @@ const VAGUE_SKILLS = [
   "self motivated", "self-motivated", "problem solver", "problem solving"
 ];
 
+// Maps a target role to the skills typically relevant to it. `keywords` are
+// lowercase fragments used for matching (both the role text and each listed
+// skill are checked against these); `examples` are clean display versions
+// shown in suggestion text. This list can't cover every job title — when no
+// category matches, we fall back to scoring skills on specificity alone.
+const ROLE_CATEGORIES = [
+  {
+    name: "Skilled Trades & Construction",
+    keywords: ["plumb", "pipefit", "electrician", "electrical", "wiring", "carpente", "welder", "welding", "mason", "construction", "hvac", "mechanic", "automotive", "paint", "tiling", "roofing", "scaffold"],
+    examples: ["plumbing", "electrical wiring", "carpentry", "welding", "HVAC repair"]
+  },
+  {
+    name: "Software & IT",
+    keywords: ["javascript", "python", "java", "sql", "html", "css", "react", "node", "programming", "software", "developer", "data analy", "power bi", "tableau", "networking", "cybersecurity", "it support", "cloud", "aws", "database", "coding", "web develop", "app develop", "devops"],
+    examples: ["SQL", "Python", "data analysis", "cloud platforms (AWS)", "IT support"]
+  },
+  {
+    name: "Sales & Customer Service",
+    keywords: ["sales", "customer service", "crm", "negotiat", "upsell", "retail", "cashier", "call cent", "telemarketing", "client relations", "account manage", "business development"],
+    examples: ["CRM software", "negotiation", "customer service", "retail sales"]
+  },
+  {
+    name: "Marketing & Social Media",
+    keywords: ["marketing", "social media", "seo", "content creation", "content writing", "copywriting", "branding", "digital marketing", "google ads", "canva", "influencer", "community manage"],
+    examples: ["social media management", "SEO", "content creation", "Canva"]
+  },
+  {
+    name: "Administration & Office",
+    keywords: ["administra", "data entry", "scheduling", "microsoft office", "office manage", "filing", "bookkeeping", "correspondence", "receptionist", "executive assistant", "secretary", "clerical"],
+    examples: ["Microsoft Office", "data entry", "scheduling", "office administration"]
+  },
+  {
+    name: "Healthcare & Caregiving",
+    keywords: ["nurs", "patient care", "first aid", "caregiv", "phlebotomy", "medical", "healthcare", "chw", "midwife", "clinical", "pharmac", "physiotherap"],
+    examples: ["patient care", "first aid", "clinical experience"]
+  },
+  {
+    name: "Education & Training",
+    keywords: ["teach", "tutor", "curriculum", "classroom", "lesson plan", "mentor", "instructor", "trainer", "facilitat"],
+    examples: ["lesson planning", "classroom management", "tutoring"]
+  },
+  {
+    name: "Hospitality & Food Service",
+    keywords: ["cook", "culinary", "chef", "food safety", "waitstaff", "waiter", "waitress", "bartend", "hospitality", "hotel", "barista", "catering", "housekeeping"],
+    examples: ["food safety", "customer service", "barista skills", "catering"]
+  },
+  {
+    name: "Logistics & Driving",
+    keywords: ["driv", "logistics", "warehouse", "forklift", "delivery", "supply chain", "inventory", "dispatch", "courier", "fleet"],
+    examples: ["driving license", "warehouse management", "logistics coordination"]
+  },
+  {
+    name: "Finance & Accounting",
+    keywords: ["account", "bookkeeping", "financial analy", "auditing", "taxation", "budget", "quickbooks", "payroll", "finance"],
+    examples: ["bookkeeping", "Excel", "financial reporting", "QuickBooks"]
+  },
+  {
+    name: "Design & Creative",
+    keywords: ["graphic design", "photoshop", "illustrator", "ui/ux", "ux design", "ui design", "figma", "video editing", "photography", "animation", "creative direct"],
+    examples: ["graphic design", "Figma", "Adobe Photoshop", "video editing"]
+  },
+  {
+    name: "Agriculture",
+    keywords: ["farm", "agricultur", "crop", "livestock", "irrigation", "agronom", "horticulture"],
+    examples: ["crop management", "irrigation", "livestock care"]
+  }
+];
+
+function findRoleCategory(roleText) {
+  const lower = roleText.toLowerCase();
+  return ROLE_CATEGORIES.find(cat => cat.keywords.some(k => lower.includes(k))) || null;
+}
+
+function skillMatchesCategory(skillLower, category) {
+  return category.keywords.some(k => skillLower.includes(k) || k.includes(skillLower));
+}
+
 const EXPERIENCE_POINTS = {
   "0": 5,
   "lt1": 12,
@@ -26,11 +103,11 @@ const EXPERIENCE_LABELS = {
 };
 
 const EDUCATION_POINTS = {
-  "none": 5,
-  "secondary": 8,
-  "vocational": 11,
-  "bachelors": 13,
-  "masters": 15
+  "none": 6,
+  "secondary": 10,
+  "vocational": 14,
+  "bachelors": 17,
+  "masters": 20
 };
 
 const READINESS_POINTS = {
@@ -40,9 +117,9 @@ const READINESS_POINTS = {
 };
 
 const MAX_POINTS = {
-  skills: 25,
+  skills: 20,
   experience: 25,
-  education: 15,
+  education: 20,
   completeness: 20,
   readiness: 15
 };
@@ -86,7 +163,13 @@ function isMeaningful(value) {
 
 function scoreProfile(data) {
   const validSkills = parseSkills(data.skills);
-  const skillsPoints = Math.round((Math.min(validSkills.length, 5) / 5) * MAX_POINTS.skills);
+  const category = isMeaningful(data.role) ? findRoleCategory(data.role) : null;
+
+  let relevantSkills = validSkills;
+  if (category) {
+    relevantSkills = validSkills.filter(s => skillMatchesCategory(s.toLowerCase(), category));
+  }
+  const skillsPoints = Math.round((Math.min(relevantSkills.length, 5) / 5) * MAX_POINTS.skills);
 
   const experiencePoints = EXPERIENCE_POINTS[data.experience] || 0;
   const educationPoints = EDUCATION_POINTS[data.education] || 0;
@@ -112,7 +195,7 @@ function scoreProfile(data) {
 
   const total = Object.values(buckets).reduce((sum, b) => sum + b.points, 0);
 
-  return { total, buckets, validSkills };
+  return { total, buckets, validSkills, relevantSkills, category };
 }
 
 function scoreTier(total) {
@@ -124,19 +207,25 @@ function scoreTier(total) {
 
 function buildSuggestions(data, result) {
   const suggestions = [];
-  const { buckets, validSkills } = result;
+  const { buckets, validSkills, relevantSkills, category } = result;
   const role = isMeaningful(data.role) ? data.role.trim() : "your target role";
 
   const candidates = [];
 
   if (buckets.skills.points < buckets.skills.max) {
-    const needed = 5 - validSkills.length;
-    candidates.push({
-      pct: buckets.skills.points / buckets.skills.max,
-      text: validSkills.length === 0
-        ? `You haven't listed any specific skills yet. Add 3–5 concrete skills relevant to "${role}" — think tools, software, or measurable abilities (e.g. "Excel", "SQL", "customer onboarding") rather than personality traits.`
-        : `You listed ${validSkills.length} specific skill${validSkills.length === 1 ? "" : "s"}. Add ${Math.max(needed, 1)} more relevant to "${role}" to strengthen this section.`
-    });
+    let text;
+    if (validSkills.length === 0) {
+      text = `You haven't listed any specific skills yet. Add 3–5 concrete skills relevant to "${role}" — think tools, software, or measurable abilities rather than personality traits.`;
+    } else if (category && relevantSkills.length === 0) {
+      text = `None of your listed skills matched what's typically relevant to "${role}" (${category.name}). Consider adding skills like ${category.examples.slice(0, 3).join(", ")} — or double check your target role is set correctly.`;
+    } else if (category) {
+      const needed = 5 - relevantSkills.length;
+      text = `You listed ${relevantSkills.length} skill${relevantSkills.length === 1 ? "" : "s"} relevant to "${role}". Add ${Math.max(needed, 1)} more — e.g. ${category.examples.slice(0, 3).join(", ")}.`;
+    } else {
+      const needed = 5 - validSkills.length;
+      text = `You listed ${validSkills.length} specific skill${validSkills.length === 1 ? "" : "s"}. We couldn't automatically match "${role}" to a category to check relevance, so add ${Math.max(needed, 1)} more skills you know are actually used in "${role}" roles.`;
+    }
+    candidates.push({ pct: buckets.skills.points / buckets.skills.max, text });
   }
 
   if (buckets.experience.points < buckets.experience.max) {

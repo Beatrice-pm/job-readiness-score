@@ -18,11 +18,13 @@ This is a transparent, rules-based score — not an AI judgment. See the "How is
 
 | Category | Max points |
 |---|---|
-| Skills listed | 25 |
+| Skills relevant to target role | 20 |
 | Work experience | 25 |
-| Education | 15 |
+| Education | 20 |
 | Profile completeness | 20 |
 | Application readiness | 15 |
+
+Skills only count toward the score if they're relevant to the target role — the app matches the role against common job categories (trades, IT, sales, healthcare, etc.) and checks listed skills against that category. This prevents unrelated skills (e.g. listing "JavaScript" for a "Plumber" role) from inflating the score. If the role doesn't match any known category, scoring falls back to counting specific skills without a relevance check.
 
 ## v1 scope
 
