@@ -314,7 +314,8 @@ function buildSuggestions(data, result) {
   picked = picked.slice(0, 5);
 
   if (result.seniorityGap > 0) {
-    const gapText = `Your target role "${role}" reads as ${result.seniority.label}, which typically expects more experience than "${EXPERIENCE_LABELS[data.experience]}". This is a significant mismatch, so your score is capped at ${result.cap} regardless of other strengths — consider targeting a title that matches your current experience (e.g. dropping "${result.seniority.label.split("/")[0]}" from the title), or building more experience before applying at this level.`;
+    const seniorityWord = result.seniority.label.replace(/-level$/i, "");
+    const gapText = `Your target role "${role}" reads as ${result.seniority.label}, which typically expects more experience than "${EXPERIENCE_LABELS[data.experience]}". This is a significant mismatch, so your score is capped at ${result.cap} regardless of other strengths — consider targeting a title that matches your current experience (e.g. dropping "${seniorityWord}" from the title), or building more experience before applying at this level.`;
     picked = [gapText, ...picked].slice(0, 5);
   }
 
